@@ -69,11 +69,8 @@ app.get('/api/news/list_words', async(req, res, next)=>{
     //     }
     //     res.status(400).json({ error : 'Error!!!!' });
     // });
-
-    New.find({}).toArray(function(err, news) {
-        if (err) throw err;
-        res.json(news);
-      });
+    const result = await New.find({});
+    console.log(result);
 });
 
 app.listen(port, ()=>{

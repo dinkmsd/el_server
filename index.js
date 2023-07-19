@@ -57,6 +57,8 @@ app.post('/api/user/login', async(req, res, next)=>{
 })
 
 app.get('/api/news/list_words', async(req, res, next)=>{
+    const db = client.db('api');
+
     db.collection('news').find().toArray((err, result) => {
         if (err) {
           console.error('Lỗi khi lấy danh sách người dùng:', err);

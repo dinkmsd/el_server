@@ -3,6 +3,8 @@ const app = express();
 
 const database = require('./database');
 const User = require('./account.js');
+const New = require('./new.js');
+
 const bodyParser = require('body-parser');
 const port = 8000;
 
@@ -11,7 +13,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
+//Connect Database
 database.connect();
+
 app.post('/api/user/register', async(req, res, next)=>{
     const {fullname, phone, email, password } = req.body;
     try {
@@ -57,16 +62,8 @@ app.post('/api/user/login', async(req, res, next)=>{
 })
 
 app.get('/api/news/list_words', async(req, res, next)=>{
-    const db = client.db('api');
 
-    db.collection('news').find().toArray((err, result) => {
-        if (err) {
-          console.error('Lỗi khi lấy danh sách người dùng:', err);
-          res.status(500).send('Lỗi máy chủ');
-          return;
-        }
-        res.send(result);
-      });
+    res.json({ user: 'tobi' });
 })
 
 app.listen(port, ()=>{

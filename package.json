@@ -1,0 +1,27 @@
+{
+  "name": "codedao_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dinkmsd/CodeDao_Server.git"
+  },
+  "keywords": [
+    "english_app",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "xuanloc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dinkmsd/CodeDao_Server/issues"
+  },
+  "homepage": "https://github.com/dinkmsd/CodeDao_Server#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

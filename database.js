@@ -7,7 +7,7 @@ async function connect() {
         await mongoose.connect(uri_atlas, {
             useNewUrlParser: true
         })
-        console.log('connect db success')
+        console.log('Connect db success')
     } catch (error) {
         console.log(error)
     }

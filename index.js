@@ -61,17 +61,19 @@ app.post('/api/user/login', async(req, res, next)=>{
     }
 })
 
-app.get('/api/news/list_words', async(req, res, next)=>{
-    // New.find( {}, function (error, news) {
-    //     if (!error) {
-    //         res.json(news);
-    //         return;
-    //     }
-    //     res.status(400).json({ error : 'Error!!!!' });
-    // });
-    const result = await New.find({});
-    res.json(result);
+app.get('/api/news', async(req, res, next)=>{
+    try {
+        const result = await New.find({});
+        res.json(result);
+    } catch (e) {
+        console.log('Network Error!!');
+    }
+    
 });
+
+
+
+
 
 app.listen(port, ()=>{
     console.log(`Server: ${port}`);

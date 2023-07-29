@@ -62,7 +62,7 @@ app.post('/api/user/login', async(req, res, next)=>{
     }
 })
 
-app.get('/user/add-new-word', async(req, res, next)=>{
+app.post('/user/add-new-word', async(req, res, next)=>{
     const { username, word, meaning, favourite, type, describe, } = req.body;
 
   

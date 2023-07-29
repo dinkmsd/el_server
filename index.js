@@ -18,18 +18,19 @@ app.use(bodyParser.urlencoded({
 database.connect();
 
 app.post('/api/user/register', async(req, res, next)=>{
-    const {fullname, phone, email, password } = req.body;
+    const {fullname, username, email, password } = req.body;
     try {
-        await User.findOne({phone: phone}).then(async user => {
+        await User.findOne({username: username}).then(async user => {
             if (!user){
                 let data = {
                     fullname: fullname,
-                    phone: phone,
+                    username: username,
                     email:email,
                     password: password,
+                    listWords: [],
                 }
                 await User(data).save()
-                return res.status(200).json({success: true, record: fullname})
+                return res.status(200).json({success: true, record: username})
             }else{
                 return res.status(300).json({success: false, msg: 'Account existed !'})
             }
@@ -41,9 +42,9 @@ app.post('/api/user/register', async(req, res, next)=>{
     }
 })
 app.post('/api/user/login', async(req, res, next)=>{
-    const {phone, password} = req.body;
+    const {username, password} = req.body;
     try {
-        await User.findOne({phone: phone}).then(async user => {
+        await User.findOne({username: username}).then(async user => {
             if (!user){
                 return res.status(300).json({success: false, msg: 'Account is not found'})
             }else{
@@ -61,17 +62,96 @@ app.post('/api/user/login', async(req, res, next)=>{
     }
 })
 
-app.get('/api/news', async(req, res, next)=>{
+app.get('/user/add-new-word', async(req, res, next)=>{
+    const { username, word, meaning, favourite, type, describe, } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ message: 'Vui lòng nhập tên đăng nhập!!!' });
+  }
+
+  try {
+    // Tìm người dùng trong cơ sở dữ liệu
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+    }
+
+    // Thêm từ mới vào danh sách từ điển của người dùng
+    user.listWords.push({ word, meaning, favourite, type, describe, });
+    await user.save();
+
+    return res.status(201).json({ message: 'Thêm từ mới thành công.', listWords: user.listWords });
+  } catch (error) {
+    console.error('Lỗi khi thêm từ mới:', error);
+    return res.status(500).json({ message: 'Đã xảy ra lỗi khi thêm từ mới.' });
+  }
+});
+
+app.get('/listword/:username', async (req, res) => {
+    const { username } = req.params;
+
+    if (!username) {
+        return res.status(400).json({ message: 'Vui lòng nhập tên đăng nhập.' });
+    }
+
+    try {
+        // Tìm người dùng trong cơ sở dữ liệu
+        const user = await User.findOne({ username });
+
+        if (!user) {
+        return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+        }
+
+        // Trả về danh sách từ điển của người dùng
+        return res.status(200).json({ listWords: user.listWords });
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách từ điển:', error);
+        return res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy danh sách từ điển.' });
+    }
+});
+  
+
+app.delete('/dictionary/:username/:word', async (req, res) => {
+    const { username, word } = req.params;
+  
+    if (!username || !word) {
+      return res.status(400).json({ message: 'Vui lòng nhập tên đăng nhập và từ cần xoá.' });
+    }
+  
+    try {
+      // Tìm người dùng trong cơ sở dữ liệu
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+      }
+  
+      // Tìm từ trong danh sách từ điển của người dùng
+      const wordIndex = user.dictionary.findIndex(entry => entry.word === word);
+      if (wordIndex === -1) {
+        return res.status(404).json({ message: 'Từ không tồn tại trong danh sách từ điển.' });
+      }
+  
+      // Xoá từ khỏi danh sách từ điển của người dùng
+      user.dictionary.splice(wordIndex, 1);
+      await user.save();
+  
+      return res.status(200).json({ message: 'Xoá từ thành công.', dictionary: user.dictionary });
+    } catch (error) {
+      console.error('Lỗi khi xoá từ:', error);
+      return res.status(500).json({ message: 'Đã xảy ra lỗi khi xoá từ.' });
+    }
+  });
+
+app.get('/news', async(req, res, next)=>{
     try {
         const result = await New.find({});
         res.json(result);
     } catch (e) {
         console.log('Network Error!!');
-    }
-    
+    } 
 });
-
-
 
 
 

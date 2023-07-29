@@ -12,4 +12,5 @@ const NewModel = new Schema({
         type: String,
     },
 })
+
 module.exports = mongoose.model("New", NewModel);

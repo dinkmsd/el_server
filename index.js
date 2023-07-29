@@ -65,10 +65,7 @@ app.post('/api/user/login', async(req, res, next)=>{
 app.get('/user/add-new-word', async(req, res, next)=>{
     const { username, word, meaning, favourite, type, describe, } = req.body;
 
-  if (!username) {
-    return res.status(400).json({ message: 'Vui lòng nhập tên đăng nhập!!!' });
-  }
-
+  
   try {
     // Tìm người dùng trong cơ sở dữ liệu
     const user = await User.findOne({ username });

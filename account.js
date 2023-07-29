@@ -15,11 +15,11 @@ const UserModel = new Schema({
         type: String
     },
     listWords:[{
-        word: String,
-        meaning: String,
-        favourite: Boolean,
-        type: String,
-        describe: String,
+        word: {type: String},
+        meaning: {type: String},
+        favourite: {type: Boolean},
+        type: {type: String},
+        describe: {type: String},
     }]
 })
 module.exports = mongoose.model("User", UserModel);

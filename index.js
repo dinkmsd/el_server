@@ -90,6 +90,29 @@ app.post('/user/add-new-word', async(req, res, next)=>{
   }
 });
 
+app.get('/get-info/:username', async (req, res) => {
+    const { username } = req.params;
+
+    if (!username) {
+        return res.status(400).json({ message: 'Username not exist' });
+    }
+
+    try {
+        // Tìm người dùng trong cơ sở dữ liệu
+        const user = await User.findOne({ username });
+
+        if (!user) {
+        return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+        }
+
+        // Trả về danh sách từ điển của người dùng
+        return res.status(200).json({ username: user.username, email: user.email, fullname: user.fullname });
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ message: 'Error' });
+    }
+});
+
 app.get('/list-word/:username', async (req, res) => {
     const { username } = req.params;
 

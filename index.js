@@ -68,16 +68,19 @@ app.post('/user/login', async(req, res, next)=>{
 
 app.post('/user/add-new-word', async(req, res, next)=>{
     const { username, word, meaning, favourite, type, describe, } = req.body;
-  
+  console.log(req.body);
   try {
     // Tìm người dùng trong cơ sở dữ liệu
-    
     const user = await User.findOne({ username });
 
     if (!user) {
       return res.status(404).json({ message: 'Người dùng không tồn tại.' });
     }
-
+    
+    const wordIndex = user.listWords.findIndex(entry => entry.word === word);
+    if (wordIndex !== -1) {
+      return res.status(404).json({ message: 'Từ này đã tồn tại.' });
+    }
     // Thêm từ mới vào danh sách từ điển của người dùng
     const dummy = {type: type, meaning: meaning, word: word, favourite: favourite, describe: describe};
     user.listWords.push(dummy);
@@ -136,6 +139,34 @@ app.get('/list-word/:username', async (req, res) => {
     }
 });
   
+app.put('/word-update/:username/:word', async (req, res) => {
+    const { username, word } = req.params;
+    const { favourite } = req.body;
+  
+    try {
+      // Tìm người dùng trong cơ sở dữ liệu
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+      }
+  
+      // Tìm từ trong danh sách từ điển của người dùng
+      const wordIndex = user.listWords.findIndex(entry => entry.word === word);
+      if (wordIndex === -1) {
+        return res.status(404).json({ message: 'Từ không tồn tại trong danh sách từ điển.' });
+      }
+  
+      // Cập nhật nghĩa của từ trong danh sách từ điển của người dùng
+      user.listWords[wordIndex].favourite = favourite;
+      await user.save();
+  
+      return res.status(200).json({ message: 'Cập nhật nghĩa của từ thành công.', dictionary: user.dictionary });
+    } catch (error) {
+      console.error('Lỗi khi cập nhật nghĩa của từ:', error);
+      return res.status(500).json({ message: 'Đã xảy ra lỗi khi cập nhật nghĩa của từ.' });
+    }
+  });
 
 app.delete('/delete-word/:username/:word', async (req, res) => {
     const { username, word } = req.params;

@@ -7,6 +7,7 @@ const New = require('./new.js');
 
 const bodyParser = require('body-parser');
 const port = 8000;
+const bcrypt = require('bcryptjs');
 
 
 app.use(bodyParser.json());
@@ -199,6 +200,40 @@ app.delete('/delete-word/:username/:word', async (req, res) => {
       return res.status(500).json({ message: 'Đã xảy ra lỗi khi xoá từ.' });
     }
   });
+
+  // Đổi mật khẩu của người dùng
+app.put('/change-password/:username', async (req, res) => {
+  const { username } = req.params;
+  const { currentPassword, newPassword } = req.body;
+
+  if (!username || !currentPassword || !newPassword) {
+    return res.status(400).json({ message: 'Vui lòng nhập tên đăng nhập, mật khẩu hiện tại và mật khẩu mới.' });
+  }
+
+  try {
+    // Tìm người dùng trong cơ sở dữ liệu
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+    }
+
+    // Kiểm tra mật khẩu hiện tại
+    if (currentPassword !== user.password) {
+      return res.status(401).json({ message: 'Mật khẩu hiện tại không đúng.' });
+    }
+
+    // Cập nhật mật khẩu mới
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({ message: 'Đổi mật khẩu thành công.' });
+  } catch (error) {
+    console.error('Lỗi khi đổi mật khẩu:', error);
+    return res.status(500).json({ message: 'Đã xảy ra lỗi khi đổi mật khẩu.' });
+  }
+});
+
 
 app.get('/news', async(req, res, next)=>{
     try {

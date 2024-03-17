@@ -1,5 +1,4 @@
 # English App Server
-## Getting Started
 
 ## Getting Started
 
